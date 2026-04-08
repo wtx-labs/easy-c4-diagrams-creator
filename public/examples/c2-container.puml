@@ -1,0 +1,30 @@
+@startuml InternetBanking_C4_Containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/v2.10.0/C4_Container.puml
+
+title Container diagram — Internet Banking System
+
+Person(customer, "Personal Banking Customer", "A customer of the bank, with personal bank accounts")
+
+System_Ext(mainframe, "Mainframe Banking System", "Stores core banking information about customers, accounts, transactions, etc.")
+System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system")
+
+System_Boundary(banking, "Internet Banking System") {
+  Container(webApp, "Web Application", "Java and Spring MVC", "Delivers the static content and the internet banking single-page application")
+  Container(mobileApp, "Mobile App", "Xamarin", "Provides a limited subset of the internet banking functionality to customers via their mobile device")
+  Container(spa, "Single-Page Application", "JavaScript and Angular", "Delivers all of the internet banking functionality to customers via their web browser")
+  Container(apiApp, "API Application", "Java and Spring MVC", "Provides internet banking functionality via a JSON/HTTPS API")
+  ContainerDb(db, "Database", "Relational database schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+}
+
+Rel(customer, webApp, "Visits", "HTTPS")
+Rel(customer, mobileApp, "Uses", "HTTPS")
+Rel(customer, spa, "Uses", "HTTPS")
+Rel(webApp, apiApp, "Makes API calls", "JSON/HTTPS")
+Rel(spa, apiApp, "Makes API calls", "JSON/HTTPS")
+Rel(mobileApp, apiApp, "Makes API calls", "JSON/HTTPS")
+Rel(apiApp, db, "Reads from and writes to", "JDBC")
+Rel(apiApp, mainframe, "Uses", "XML/HTTPS")
+Rel(apiApp, email, "Sends e-mail using", "SMTP")
+
+@enduml
+

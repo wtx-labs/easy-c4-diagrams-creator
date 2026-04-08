@@ -1,0 +1,18 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Protect implementation files (even though some hosts ignore .htaccess in subdirs)
+RewriteRule ^(?:src|data)/ - [F]
+
+# Serve existing files directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Route API to PHP router
+RewriteRule ^api/ index.php [L,QSA]
+
+# Fallback to UI
+RewriteRule ^ index.html [L]
+

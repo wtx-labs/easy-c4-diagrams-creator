@@ -1,0 +1,33 @@
+@startuml InternetBanking_C4_API_Components
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/v2.10.0/C4_Component.puml
+
+title Component diagram — API Application
+
+Person(customer, "Personal Banking Customer", "A customer of the bank, with personal bank accounts")
+
+System_Ext(db, "Database", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+System_Ext(mainframe, "Mainframe Banking System", "Stores core banking information about customers, accounts, transactions, etc.")
+System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system")
+
+System_Boundary(apiApp, "API Application") {
+  Component(signin, "Sign In Controller", "Spring MVC Rest Controller", "Allows users to sign in to the internet banking system")
+  Component(accounts, "Accounts Summary Controller", "Spring MVC Rest Controller", "Provides customers with a summary of their bank accounts")
+  Component(reset, "Reset Password Controller", "Spring MVC Rest Controller", "Allows users to reset their passwords with a single use URL")
+  Component(security, "Security Component", "Spring Bean", "Provides functionality related to signing in, changing passwords, etc.")
+  Component(mainframeFacade, "Mainframe Banking System Facade", "Spring Bean", "A facade onto the mainframe banking system")
+  Component(emailComp, "E-mail Component", "Spring Bean", "Sends e-mails to users")
+}
+
+Rel(customer, signin, "Makes API calls", "JSON/HTTPS")
+Rel(customer, accounts, "Makes API calls", "JSON/HTTPS")
+Rel(customer, reset, "Makes API calls", "JSON/HTTPS")
+Rel(signin, security, "Uses", "local call")
+Rel(accounts, mainframeFacade, "Uses", "local call")
+Rel(reset, security, "Uses", "local call")
+Rel(reset, emailComp, "Uses", "local call")
+Rel(security, db, "Reads from and writes to", "JDBC")
+Rel(mainframeFacade, mainframe, "Uses", "XML/HTTPS")
+Rel(emailComp, email, "Sends e-mail using", "SMTP")
+
+@enduml
+
