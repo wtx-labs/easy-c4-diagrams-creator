@@ -4,7 +4,7 @@ Convert **PlantUML C4** or **Mermaid C4** text into a **`.drawio`** diagram you 
 
 > **🚀 Online tool available - try it now**
 >
-> **Open**: `https://c4.wtx.pl/`
+> **Open**: [c4.wtx.pl](https://c4.wtx.pl)
 >
 > Paste your C4 source, convert, then **download** the `.drawio` file or **open it directly** in diagrams.net - in seconds.
 >
