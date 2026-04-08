@@ -16,6 +16,11 @@ Convert **PlantUML C4** or **Mermaid C4** text into a **`.drawio`** diagram you 
 - **Consistent C4 visuals** powered by the [EasyC4](https://github.com/maciek365/c4-diagrams.net) shape library (Context/Container/Component).
 - **Team-friendly workflow**: text inputs are easy to review in PRs, while `.drawio` is easy to open for anyone.
 
+### About the C4 model
+
+The [C4 model](https://c4model.com/) is a lightweight way to describe software architecture using a small set of diagram levels.
+This tool focuses on the most common C4 views: **System Context (C1)**, **Container (C2)**, and **Component (C3)** - so you can go from text to a `.drawio` diagram quickly.
+
 ### Key features
 
 - **Inputs**: PlantUML C4 (`@startuml … @enduml`) or Mermaid C4 (`C4Context` / `C4Container` / `C4Component`).
