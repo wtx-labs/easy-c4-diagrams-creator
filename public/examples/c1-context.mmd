@@ -1,0 +1,13 @@
+C4Context
+title System context - Internet Banking System
+
+Person(customer, "Personal Banking Customer", "A customer of the bank, with personal bank accounts")
+
+System(banking, "Internet Banking System", "Allows customers to view information about their bank accounts, and make payments")
+
+System_Ext(mainframe, "Mainframe Banking System", "Stores all of the core banking information about customers, accounts, transactions, etc.")
+System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system")
+
+Rel(customer, banking, "Uses", "HTTPS")
+Rel(banking, mainframe, "Uses", "XML/HTTPS")
+Rel(banking, email, "Sends e-mail using", "SMTP")

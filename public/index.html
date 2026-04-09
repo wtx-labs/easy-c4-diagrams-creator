@@ -102,8 +102,9 @@
     @media (prefers-reduced-motion: reduce) {
       #bg-rain { display: none; }
     }
-    .page { position: relative; z-index: 1; }
     .page {
+      position: relative;
+      z-index: 1;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -111,14 +112,18 @@
       max-width: 66rem;
       margin: 0 auto;
       padding: 1.35rem 1.25rem 0;
+      transition: max-width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .page.page--editor-wide {
+      max-width: 100%;
     }
     .hero {
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
     }
     .hero-row {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-end;
+      align-items: baseline;
       justify-content: space-between;
       gap: 0.65rem 1.5rem;
     }
@@ -175,6 +180,9 @@
       text-align: right;
       flex: 1 1 12rem;
       min-width: min(100%, 14rem);
+      line-height: 1.25;
+      position: relative;
+      top: -0.22em;
     }
     .hero-rotator {
       display: inline-grid;
@@ -211,6 +219,7 @@
         font-size: 0.82rem;
         line-height: 1.35;
         flex: 0 0 auto;
+        top: 0;
       }
       .hero-rotator {
         min-height: 2.1em;
@@ -223,6 +232,9 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
+      .page {
+        transition: none;
+      }
       .hero-slogan {
         transition: none;
         transform: none;
@@ -233,38 +245,42 @@
     }
     .page-footer {
       margin-top: auto;
-      padding: 2rem 0 1.25rem;
-      text-align: center;
+      padding: 1rem 0 1.15rem;
+      text-align: left;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .footer-line {
+    .footer-cell {
       margin: 0;
       font-size: 0.78rem;
       line-height: 1.45;
-      color: rgba(220, 228, 245, 0.46);
+      color: rgba(220, 228, 245, 0.44);
     }
-    .footer-credit {
-      margin: 0;
-      font-size: 0.78rem;
-      line-height: inherit;
-      color: inherit;
-    }
-    .footer-credit a {
-      color: rgba(200, 220, 255, 0.6);
+    .footer-cell a:not(.footer-brand-logo) {
+      color: rgba(200, 220, 255, 0.7);
       text-decoration: underline;
       text-underline-offset: 2px;
     }
-    .footer-credit a:hover {
-      color: #fff;
-    }
-    .footer-credit.footer-left {
-      color: rgba(220, 228, 245, 0.44);
-    }
-    .footer-credit.footer-left a {
-      color: rgba(200, 220, 255, 0.7);
-    }
-    .footer-credit.footer-left a:hover {
+    .footer-cell a:not(.footer-brand-logo):hover {
       color: rgba(255, 255, 255, 0.92);
+    }
+    .footer-cell strong {
+      font-weight: 600;
+      color: rgba(228, 234, 248, 0.58);
+    }
+    .footer-brand-logo {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.2rem;
+      text-decoration: none;
+      vertical-align: middle;
+    }
+    .footer-brand-logo img {
+      height: 18px;
+      width: auto;
+      display: block;
+    }
+    .footer-brand-logo:hover img {
+      opacity: 0.92;
     }
 
     .footer-row {
@@ -275,17 +291,17 @@
       flex-wrap: wrap;
       text-align: left;
     }
-    .footer-row .footer-left {
+    .footer-row .footer-cell--grow {
       flex: 1 1 22rem;
       min-width: min(100%, 26rem);
     }
-    .footer-row .footer-right {
+    .footer-row .footer-cell--end {
       flex: 0 1 auto;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 0.5rem;
-      white-space: nowrap;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.5rem;
     }
 
     .card {
@@ -595,6 +611,7 @@
       box-shadow: 0 10px 26px rgba(12, 40, 90, 0.38);
       display: inline-flex;
       align-items: center;
+      border-radius: 6px;
     }
     button.btn-primary:hover {
       background: #104889;
@@ -783,7 +800,7 @@
               data-gramm="false"
               data-gramm_editor="false"
               data-enable-grammarly="false"
-              placeholder='Paste C4 source here, or drag & drop / upload a .puml or .txt file.
+              placeholder='Paste C4 source here, or drag & drop / upload a .puml, .mmd, or .txt file.
 
 PlantUML: one @startuml … @enduml block. Mermaid: start with C4Context, C4Container, or C4Component.
 
@@ -806,14 +823,14 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
             <div class="side-card">
               <p class="side-title">Upload file</p>
               <div class="file-picker-block">
-                <span class="optional">Load a <code>.puml</code> or <code>.txt</code> file or paste C4 in the editor.</span>
+                <span class="optional">Load a <code>.puml</code>, <code>.mmd</code>, or <code>.txt</code> file or paste C4 in the editor.</span>
                 <div class="file-picker-line" style="margin-top: 0.5rem;">
                   <input
                     type="file"
                     id="file"
                     name="file"
                     class="visually-hidden-input"
-                    accept=".puml,.txt,text/plain"
+                    accept=".puml,.txt,.mmd,text/plain"
                     tabindex="-1"
                   />
                   <label for="file" class="btn-bs-outline" tabindex="0">Browse…</label>
@@ -875,22 +892,15 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
 
     <footer class="page-footer">
       <div class="footer-row">
-        <p class="footer-line footer-credit footer-left">
-          Generated diagrams use the library
-          <a href="https://github.com/maciek365/c4-diagrams.net" target="_blank" rel="noopener noreferrer">EasyC4 (maciek365/c4-diagrams.net)</a>
-          for diagrams.net / draw.io.
+        <p class="footer-cell footer-cell--grow">
+          Need to integrate with your tools? Use the <strong>EasyC4 Diagram Creator API</strong> - get the <a href="docs/easy-c4-api-specification.yaml">OpenAPI specification</a> for easy integration!
         </p>
-        <div class="footer-line footer-right">
-          <span>Powered by</span>
-          <a href="https://wtx.pl/" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.5rem; color:inherit; text-decoration:none;">
-            <img
-              src="https://wtx.pl/wtx-labs-logo-mini-300.png"
-              alt="WTX Labs"
-              loading="lazy"
-              style="height:18px; width:auto;"
-            />
+        <p class="footer-cell footer-cell--end">
+          Powered by the <a href="https://github.com/maciek365/c4-diagrams.net" target="_blank" rel="noopener noreferrer">EasyC4</a> shape library and
+          <a href="https://wtx.pl/" class="footer-brand-logo" target="_blank" rel="noopener noreferrer">
+            <img src="https://wtx.pl/wtx-labs-logo-mini-300.png" alt="WTX Labs" loading="lazy" />
           </a>
-        </div>
+        </p>
       </div>
     </footer>
   </div>
@@ -901,11 +911,11 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
         <h2 id="examples-puml-title" class="modal-title">PlantUML C4 examples</h2>
       </div>
       <div class="modal-body">
-        <p>Loads the built-in samples (same scenarios as Mermaid). Choose diagram level:</p>
+        <p>Inserts PlantUML C4 text samples of different diagrams.</p>
         <div class="side-actions" style="margin-top: 0.75rem;">
-          <button type="button" class="btn-bs-outline btn-side" data-insert-puml="examples/c1-context.puml">System context</button>
-          <button type="button" class="btn-bs-outline btn-side" data-insert-puml="examples/c2-container.puml">Container</button>
-          <button type="button" class="btn-bs-outline btn-side" data-insert-puml="examples/c3-component.puml">Component (API)</button>
+          <button type="button" class="btn-bs-outline btn-side" data-insert-puml="examples/c1-context.puml">System context diagram</button>
+          <button type="button" class="btn-bs-outline btn-side" data-insert-puml="examples/c2-container.puml">Container diagram</button>
+          <button type="button" class="btn-bs-outline btn-side" data-insert-puml="examples/c3-component.puml">Component diagram</button>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-primary" data-examples-close="examples-modal-puml">Close</button>
@@ -920,11 +930,11 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
         <h2 id="examples-mermaid-title" class="modal-title">Mermaid C4 examples</h2>
       </div>
       <div class="modal-body">
-        <p>Inserts Mermaid C4 text equivalent to the PlantUML samples. Choose diagram level:</p>
+        <p>Inserts Mermaid C4 text samples of different diagrams.</p>
         <div class="side-actions" style="margin-top: 0.75rem;">
-          <button type="button" class="btn-bs-outline btn-side" data-insert-mermaid="c1">System context</button>
-          <button type="button" class="btn-bs-outline btn-side" data-insert-mermaid="c2">Container</button>
-          <button type="button" class="btn-bs-outline btn-side" data-insert-mermaid="c3">Component (API)</button>
+          <button type="button" class="btn-bs-outline btn-side" data-insert-mermaid="examples/c1-context.mmd">System context diagram</button>
+          <button type="button" class="btn-bs-outline btn-side" data-insert-mermaid="examples/c2-container.mmd">Container diagram</button>
+          <button type="button" class="btn-bs-outline btn-side" data-insert-mermaid="examples/c3-component.mmd">Component diagram</button>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-primary" data-examples-close="examples-modal-mermaid">Close</button>
@@ -1112,6 +1122,8 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
 
     function updateActionButtonsEnabled() {
       const hasText = !!(src && String(src.value || '').trim());
+      const pageEl = document.querySelector('.page');
+      if (pageEl) pageEl.classList.toggle('page--editor-wide', hasText);
       if (submitBtn) submitBtn.disabled = !hasText;
       if (openDiagramsBtn) {
         openDiagramsBtn.disabled = !hasText;
@@ -1197,7 +1209,7 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
 
     async function validateInputOrThrow() {
       const puml = (src && String(src.value || '')) || '';
-      const url = 'index.php?r=/api/validate';
+      const url = '/api/validate';
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -1231,117 +1243,38 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
     async function loadExampleFromUrl(href) {
       const r = await fetch(href);
       if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
-      src.value = await r.text();
+      src.value = (await r.text()).trim() + '\n';
       src.focus();
     }
-
-    /** Mermaid C4 equivalents of public/examples/c1-context.puml, c2-container.puml, c3-component.puml */
-    const MERMAID_EXAMPLES = {
-      c1: `C4Context
-title System context - Internet Banking System
-
-Person(customer, "Personal Banking Customer", "A customer of the bank, with personal bank accounts")
-
-System(banking, "Internet Banking System", "Allows customers to view information about their bank accounts, and make payments")
-
-System_Ext(mainframe, "Mainframe Banking System", "Stores all of the core banking information about customers, accounts, transactions, etc.")
-System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system")
-
-Rel(customer, banking, "Uses", "HTTPS")
-Rel(banking, mainframe, "Uses", "XML/HTTPS")
-Rel(banking, email, "Sends e-mail using", "SMTP")
-`,
-      c2: `C4Container
-title Container diagram - Internet Banking System
-
-Person(customer, "Personal Banking Customer", "A customer of the bank, with personal bank accounts")
-
-System_Ext(mainframe, "Mainframe Banking System", "Stores core banking information about customers, accounts, transactions, etc.")
-System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system")
-
-Container_Boundary(banking, "Internet Banking System") {
-  Container(webApp, "Web Application", "Java and Spring MVC", "Delivers the static content and the internet banking single-page application")
-  Container(mobileApp, "Mobile App", "Xamarin", "Provides a limited subset of the internet banking functionality to customers via their mobile device")
-  Container(spa, "Single-Page Application", "JavaScript and Angular", "Delivers all of the internet banking functionality to customers via their web browser")
-  Container(apiApp, "API Application", "Java and Spring MVC", "Provides internet banking functionality via a JSON/HTTPS API")
-  ContainerDb(db, "Database", "Relational database schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
-}
-
-Rel(customer, webApp, "Visits", "HTTPS")
-Rel(customer, mobileApp, "Uses", "HTTPS")
-Rel(customer, spa, "Uses", "HTTPS")
-Rel(webApp, apiApp, "Makes API calls", "JSON/HTTPS")
-Rel(spa, apiApp, "Makes API calls", "JSON/HTTPS")
-Rel(mobileApp, apiApp, "Makes API calls", "JSON/HTTPS")
-Rel(apiApp, db, "Reads from and writes to", "JDBC")
-Rel(apiApp, mainframe, "Uses", "XML/HTTPS")
-Rel(apiApp, email, "Sends e-mail using", "SMTP")
-`,
-      c3: `C4Component
-title Component diagram - API Application
-
-Person(customer, "Personal Banking Customer", "A customer of the bank, with personal bank accounts")
-
-System_Ext(db, "Database", "Stores user registration information, hashed authentication credentials, access logs, etc.")
-System_Ext(mainframe, "Mainframe Banking System", "Stores core banking information about customers, accounts, transactions, etc.")
-System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system")
-
-System_Boundary(apiApp, "API Application") {
-  Component(signin, "Sign In Controller", "Spring MVC Rest Controller", "Allows users to sign in to the internet banking system")
-  Component(accounts, "Accounts Summary Controller", "Spring MVC Rest Controller", "Provides customers with a summary of their bank accounts")
-  Component(reset, "Reset Password Controller", "Spring MVC Rest Controller", "Allows users to reset their passwords with a single use URL")
-  Component(security, "Security Component", "Spring Bean", "Provides functionality related to signing in, changing passwords, etc.")
-  Component(mainframeFacade, "Mainframe Banking System Facade", "Spring Bean", "A facade onto the mainframe banking system")
-  Component(emailComp, "E-mail Component", "Spring Bean", "Sends e-mails to users")
-}
-
-Rel(customer, signin, "Makes API calls", "JSON/HTTPS")
-Rel(customer, accounts, "Makes API calls", "JSON/HTTPS")
-Rel(customer, reset, "Makes API calls", "JSON/HTTPS")
-Rel(signin, security, "Uses", "local call")
-Rel(accounts, mainframeFacade, "Uses", "local call")
-Rel(reset, security, "Uses", "local call")
-Rel(reset, emailComp, "Uses", "local call")
-Rel(security, db, "Reads from and writes to", "JDBC")
-Rel(mainframeFacade, mainframe, "Uses", "XML/HTTPS")
-Rel(emailComp, email, "Sends e-mail using", "SMTP")
-`,
-    };
 
     const AI_PROMPT_SNIPPETS = {
       puml: {
         title: 'AI prompt instructions (PlantUML)',
-        desc: 'Extra instructions to paste into ChatGPT, Claude, or similar so the model emits C4-PlantUML that fits this app\'s supported subset.',
-        body: `Generate C4-PlantUML that works with EasyC4 Diagram Creator.
+        desc: 'Paste after your own task so the model knows the result must work in a strict C4→diagram converter (e.g. this site).',
+        body: `The user will paste your answer into their own application: a tool that converts only a strict subset of C4-PlantUML into a diagram. Use the architecture or domain from the rest of this conversation, but the PlantUML must follow the rules below so that application accepts it.
 
-Output ONLY the .puml file content (no markdown fence, no commentary).
+Output only one @startuml … @enduml block (optional \`title\` line after @startuml). No markdown fences, no commentary.
 
-Rules:
-- Exactly one @startuml ... @enduml block (optional title line).
-- Use ONLY: Person, Person_Ext, System, System_Ext, SystemDb, System_Boundary { ... }, Container, ContainerDb, Component, Rel.
-- IDs: alphanumeric/underscore, no spaces.
-- Straight ASCII double quotes for all strings.
-- Each macro call on a single line (no line breaks inside parentheses).
-- Inside one System_Boundary { }: use EITHER only Component(...) OR only Container(...)/ContainerDb(...), not both.
-- Rel(from, to, "description") or Rel(from, to, "description", "technology"); from/to must be defined IDs.
-- No other PlantUML diagram types, no !include, no BiRel/Lay_*/layout skinparams beyond what fits the list above.`,
+Macros only: Person, Person_Ext, System, System_Ext, SystemDb, System_Boundary { … }, Container, ContainerDb, Component, Rel.
+
+Level: C1 = Person/System/System_Ext/SystemDb + Rel, no System_Boundary. C2 = System_Boundary containing only Container/ContainerDb. C3 = System_Boundary containing only Component. Never mix Container-type and Component lines inside one boundary.
+
+One full macro per line. Person/System types: (id, "Name", "Description"). Container/ContainerDb/Component: (id, "Name", "Technology", "Description"). Rel(a,b,"label") or Rel(a,b,"label","technology"); a and b must be defined ids.
+
+Ids = letters, digits, underscore; straight ASCII ". No !include, skinparam, BiRel, Lay_*, Update*, Deployment_*, or other @start diagram types.`,
       },
       mermaid: {
         title: 'AI prompt instructions (Mermaid C4)',
-        desc: 'Extra instructions to paste into ChatGPT, Claude, or similar so the model emits Mermaid C4 that this app can convert.',
-        body: `Generate Mermaid C4 text that works with EasyC4 Diagram Creator.
+        desc: 'Paste after your own task so the model knows the result must work in a strict Mermaid C4→diagram converter (e.g. this site).',
+        body: `The user will paste your answer into their own application: a tool that converts only a strict subset of Mermaid C4 into a diagram. Use the architecture or domain from the rest of this conversation, but the Mermaid must follow the rules below so that application accepts it.
 
-Output ONLY the diagram source (no markdown fence, no commentary). If you use a fence, the tool strips leading \`\`\` / \`\`\`mermaid lines.
+Output diagram source only (prefer no \`\`\` fence; that application strips leading fence lines if present).
 
-Rules:
-- First non-empty line must be exactly: C4Context, C4Container, or C4Component (pick one for the diagram level).
-- Optional next: title My diagram title
-- Prefer these calls (extras may be ignored): Person, Person_Ext, System, System_Ext, SystemDb, SystemDb_Ext, Container, Container_Ext, ContainerQueue, ContainerDb, ContainerDb_Ext, Component, Component_Ext, ComponentDb, Container_Boundary(id, "name") { ... }, System_Boundary(id, "name") { ... }, Rel, BiRel.
-- IDs: letters, numbers, underscore; use straight ASCII double quotes in strings.
-- One macro call per line; Rel(a, b, "label") or Rel(a, b, "label", "technology").
-- Lines like UpdateLayoutConfig, UpdateElementStyle, UpdateRelStyle, Lay_*, Deployment_Node / Node_* are accepted but ignored by this converter.
+First non-empty line exactly: C4Context, C4Container, or C4Component. Optional: \`title …\`
 
-(For @startuml/@enduml PlantUML C4, use the PlantUML-focused prompt instead.)`,
+Prefer: Person, Person_Ext, System, System_Ext, SystemDb, SystemDb_Ext, Container, Container_Ext, ContainerQueue, ContainerDb, ContainerDb_Ext, Component, Component_Ext, ComponentDb, System_Boundary/Container_Boundary { … }, Rel, BiRel. One statement per line; straight ASCII double quotes in strings. Rel(a,b,"label") or Rel(a,b,"label","technology"); ids: letters, digits, underscore.
+
+Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use the PlantUML prompt for @startuml/@enduml.)`,
       },
     };
 
@@ -1460,14 +1393,16 @@ Rules:
     });
 
     document.querySelectorAll('[data-insert-mermaid]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const key = btn.getAttribute('data-insert-mermaid');
-        const text = key && MERMAID_EXAMPLES[key];
-        if (!text || !src) return;
-        src.value = text.trim() + '\n';
-        src.focus();
-        updateActionButtonsEnabled();
-        closeExamplesModal(examplesModalMermaid);
+      btn.addEventListener('click', async () => {
+        const href = btn.getAttribute('data-insert-mermaid');
+        if (!href) return;
+        try {
+          await loadExampleFromUrl(href);
+          updateActionButtonsEnabled();
+          closeExamplesModal(examplesModalMermaid);
+        } catch (err) {
+          showFatalError('Could not load the example file.', [err && err.message ? err.message : String(err)], [], 'Example failed');
+        }
       });
     });
 
@@ -1503,8 +1438,9 @@ Rules:
 
     async function loadFileText(f) {
       const name = (f && f.name) ? String(f.name) : '';
-      const ok = name.toLowerCase().endsWith('.puml') || name.toLowerCase().endsWith('.txt');
-      if (!ok) throw new Error('Please drop/select a .puml or .txt file.');
+      const n = name.toLowerCase();
+      const ok = n.endsWith('.puml') || n.endsWith('.txt') || n.endsWith('.mmd');
+      if (!ok) throw new Error('Please drop/select a .puml, .mmd, or .txt file.');
       const t = await f.text();
       src.value = t;
       updateActionButtonsEnabled();
@@ -1591,7 +1527,7 @@ Rules:
       submitBtn.disabled = true;
       try {
         await validateInputOrThrow();
-        const url = 'index.php?r=/api/convert';
+        const url = '/api/convert';
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -1630,11 +1566,11 @@ Rules:
       try {
         const puml = src.value;
         if (!puml || !String(puml).trim()) {
-          showFatalError('Add C4 source first.', ['Paste PlantUML or Mermaid C4, or load a .puml / .txt file.'], [], 'Nothing to convert');
+          showFatalError('Add C4 source first.', ['Paste PlantUML or Mermaid C4, or load a .puml / .mmd / .txt file.'], [], 'Nothing to convert');
           return;
         }
         await validateInputOrThrow();
-        const url = 'index.php?r=/api/convert';
+        const url = '/api/convert';
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain; charset=utf-8' },

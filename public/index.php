@@ -83,6 +83,25 @@ function parseIncomingPuml(): string
 
 // ---------------- Router ----------------
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+if (!is_string($path) || $path === '') {
+    $path = '/';
+}
+
+// Internal rewrite (e.g. Apache: RewriteRule ^api/ index.php) often leaves REQUEST_URI as /index.php;
+// the original path is usually in REDIRECT_URL / REDIRECT_URI.
+if (!str_starts_with($path, '/api/')) {
+    foreach (['REDIRECT_URL', 'REDIRECT_URI'] as $k) {
+        if (empty($_SERVER[$k]) || !is_string($_SERVER[$k])) {
+            continue;
+        }
+        $candidate = parse_url($_SERVER[$k], PHP_URL_PATH);
+        if (is_string($candidate) && str_starts_with($candidate, '/api/')) {
+            $path = $candidate;
+            break;
+        }
+    }
+}
+
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
 $easyC4File = $BACKEND . '/data/easyc4-library.json';
@@ -91,7 +110,9 @@ $HY = EasyC4Shapes::load($easyC4File);
 // Support hosts without rewrite rules: allow routing via query param, e.g. index.php?r=/api/convert
 if (isset($_GET['r']) && is_string($_GET['r']) && $_GET['r'] !== '') {
     $rp = $_GET['r'];
-    if ($rp[0] !== '/') $rp = '/' . $rp;
+    if ($rp[0] !== '/') {
+        $rp = '/' . $rp;
+    }
     $path = $rp;
 }
 

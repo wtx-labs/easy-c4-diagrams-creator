@@ -4,11 +4,13 @@ Convert **PlantUML C4** or **Mermaid C4** text into a **`.drawio`** diagram you 
 
 > **🚀 Online tool available - try it now**
 >
-> **Open**: [c4.wtx.pl](https://c4.wtx.pl)
+> **Just visit online website**: [https://c4.wtx.pl](https://c4.wtx.pl)
 >
 > Paste your C4 source, convert, then **download** the `.drawio` file or **open it directly** in diagrams.net - in seconds.
 >
 > Generated diagrams use the [EasyC4](https://github.com/maciek365/c4-diagrams.net) shape library.
+
+![c4.wtx.pl](easy-c4-diagram-creator-screenshot.png)
 
 ### What it’s for
 
@@ -27,17 +29,18 @@ This tool focuses on the most common C4 views: **System Context (C1)**, **Contai
 - **Validation**: helpful errors and warnings before conversion.
 - **Export**: download a ready-to-edit **`.drawio`** (XML).
 - **One‑click open**: “Open diagram in diagrams.net” (converts and opens in a new tab).
-- **Upload / drag & drop**: load `.puml` / `.txt` files or drop them into the editor.
+- **Upload / drag & drop**: load `.puml` / `.mmd` / `.txt` files or drop them into the editor.
 - **Built-in examples**: ready samples for PlantUML and Mermaid (Context/Container/Component).
 - **AI prompt helpers**: ready-made prompt snippets to generate compatible PlantUML/Mermaid C4.
 
 ### How it works (high level)
 
 1. Paste C4 source (PlantUML or Mermaid) or load a file.
-2. The app calls `POST /api/validate`.
-3. If OK, it calls `POST /api/convert` and either:
-   - downloads a `.drawio` file, or
-   - opens it in diagrams.net.
+2. Convert and either **download** a `.drawio` file or **open** it in diagrams.net.
+
+### HTTP API (automation)
+
+You can generate a `.drawio` file **without the browser** by calling **`POST /api/convert`** with the same PlantUML or Mermaid C4 text as the request body (see `docs/DETAILS.md` and `docs/easy-c4-api-specification.yaml`). The public instance is **[c4.wtx.pl](https://c4.wtx.pl)**.
 
 ### Requirements
 
@@ -57,8 +60,8 @@ Then open `http://127.0.0.1:8000`.
 
 - **Deploy**: see `docs/DEPLOY.md`
 - **Technical details (deploy/structure/API)**: see `docs/DETAILS.md`
+- **OpenAPI (endpoints)**: see `docs/easy-c4-api-specification.yaml`
 
 ### License
 
 MIT - see `LICENSE`.
-
