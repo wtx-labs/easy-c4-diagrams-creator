@@ -2,15 +2,14 @@
 
 Convert **PlantUML C4** or **Mermaid C4** text into a **`.drawio`** diagram you can open in **diagrams.net / draw.io**.
 
-> **🚀 Online tool available - try it now**
+> **🚀 Application available online - try it now!**
 >
-> **Just visit online website**: [https://c4.wtx.pl](https://c4.wtx.pl)
+> **Just visit [https://c4.wtx.pl](https://c4.wtx.pl)**: 
 >
 > Paste your C4 source, convert, then **download** the `.drawio` file or **open it directly** in diagrams.net - in seconds.
 >
-> Generated diagrams use the [EasyC4](https://github.com/maciek365/c4-diagrams.net) shape library.
 
-![c4.wtx.pl](easy-c4-diagram-creator-screenshot.png)
+[![c4.wtx.pl](/easy-c4-diagram-creator-screenshot.png)](https://c4.wtx.pl)
 
 ### What it’s for
 
