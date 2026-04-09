@@ -17,10 +17,18 @@ See `docs/DEPLOY.md` for step-by-step deployment notes.
 ### Project structure
 
 - `public/` - webroot: UI (`index.html`) + assets + API router (`index.php`)
+- `public/docs/` - OpenAPI spec `easy-c4-api-specification.yaml` (served as `/docs/easy-c4-api-specification.yaml`; linked from the app footer)
 - `backend/` - conversion/validation logic and data (outside webroot)
-- `docs/` - extra docs (deploy/how-to/notes), including **OpenAPI** `easy-c4-api-specification.yaml`
+- `docs/` - extra docs (deploy/how-to/notes)
 
-### Public instance and API usage
+### API reference (OpenAPI)
+
+- `public/docs/easy-c4-api-specification.yaml` - OpenAPI 3 spec (paths, methods, request/response bodies, status codes); the only copy maintained in this repo.
+- `GET /api/health` - liveness check; JSON such as `{ "ok": true, "shapes": … }`.
+- `POST /api/validate` - validate PlantUML or Mermaid C4 in the body; JSON result with errors/warnings. Used by the browser UI before convert.
+- `POST /api/convert` - convert C4 text in the body to a `.drawio` XML response (`application/xml` on success, JSON error on failure). Used by the browser UI for download and “open in diagrams.net”.
+
+### Public application instance API usage examples
 
 The hosted app **[https://c4.wtx.pl](https://c4.wtx.pl)** exposes the same HTTP API as a self-hosted deployment. Typical uses:
 
@@ -71,27 +79,3 @@ Rel(user, system, "Uses")
 EOF
 ```
 
-### `{"error":"Missing @startuml ... @enduml block."}` when using curl
-
-The API only sees the **raw HTTP body**. That error means the body it parsed was **not** valid PlantUML (no `@startuml` … `@enduml`), often because the client never sent the file contents.
-
-**Windows PowerShell:** `curl` is usually an alias for **`Invoke-WebRequest`**, not real curl. It does **not** treat `--data-binary "@file.puml"` like **curl.exe** (read file from disk). You may be posting a tiny literal string instead of the diagram, which triggers this error.
-
-Use the real binary explicitly:
-
-```powershell
-curl.exe -sS -X POST "https://c4.wtx.pl/api/convert" `
-  -H "Content-Type: text/plain; charset=utf-8" `
-  --data-binary "@c1-context.puml" `
-  -o diagram.drawio
-```
-
-(Run it from the folder that contains `c1-context.puml`, or use a full path after `@`, e.g. `@D:\path\to\public\examples\c1-context.puml`.)
-
-**Checks:** open the `.puml` locally and confirm the first line starts with `@startuml` and the file ends with `@enduml`. If you use **`Content-Type: application/json`**, the PlantUML text must be inside **`"puml"`** or **`"source"`** — a raw file upload with a JSON content type will not work.
-
-### API reference (machine-readable)
-
-Full list of paths, methods, request/response shapes, and status codes: **`docs/easy-c4-api-specification.yaml`** (OpenAPI 3). The same file is copied to **`public/docs/easy-c4-api-specification.yaml`** so the live site footer can link to it; keep both in sync when editing.
-
-Documented endpoints: **`/api/health`**, **`/api/convert`**, **`/api/validate`**. The browser UI calls validate and convert before download / open in diagrams.net.

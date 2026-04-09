@@ -39,7 +39,7 @@ This tool focuses on the most common C4 views: **System Context (C1)**, **Contai
 
 ### HTTP API (automation)
 
-You can generate a `.drawio` file **without the browser** by calling **`POST /api/convert`** with the same PlantUML or Mermaid C4 text as the request body (see `docs/DETAILS.md` and `docs/easy-c4-api-specification.yaml`). The public instance is **[c4.wtx.pl](https://c4.wtx.pl)**.
+You can generate a `.drawio` file **without the browser** by calling **`POST /api/convert`** with the same PlantUML or Mermaid C4 text as the request body (see `docs/DETAILS.md` and `public/docs/easy-c4-api-specification.yaml`). The public instance is **[c4.wtx.pl](https://c4.wtx.pl)**.
 
 ### Requirements
 
@@ -59,7 +59,7 @@ Then open `http://127.0.0.1:8000`.
 
 - **Deploy**: see `docs/DEPLOY.md`
 - **Technical details (deploy/structure/API)**: see `docs/DETAILS.md`
-- **OpenAPI (endpoints)**: see `docs/easy-c4-api-specification.yaml`
+- **OpenAPI (endpoints)**: see `public/docs/easy-c4-api-specification.yaml`
 
 ### License
 
