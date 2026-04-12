@@ -2,12 +2,11 @@
 
 Convert **PlantUML C4** or **Mermaid C4** text into a **`.drawio`** diagram you can open in **diagrams.net / draw.io**.
 
-> **🚀 Application available online - try it now!**
->
-> **Just visit <a href="https://c4.wtx.pl" target="_blank" rel="noopener noreferrer">https://c4.wtx.pl</a>**: 
->
-> Paste your C4 source, convert, then **download** the `.drawio` file or **open it directly** in diagrams.net - in seconds.
->
+**🚀 Application available online - try it now!**
+
+**Just visit <a href="https://c4.wtx.pl" target="_blank" rel="noopener noreferrer">https://c4.wtx.pl</a>**: 
+
+Paste your C4 source, convert, then **download** the `.drawio` file or **open it directly** in diagrams.net - in seconds.
 
 [![c4.wtx.pl](/easy-c4-diagram-creator-screenshot.png)](https://c4.wtx.pl)
 
@@ -39,7 +38,7 @@ This tool focuses on the most common C4 views: **System Context (C1)**, **Contai
 
 ### HTTP API (automation)
 
-You can generate a `.drawio` file **without the browser** by calling **`POST /api/convert`** with the same PlantUML or Mermaid C4 text as the request body (see `docs/DETAILS.md` and `public/docs/easy-c4-api-specification.yaml`). The public instance is **[c4.wtx.pl](https://c4.wtx.pl)**.
+You can generate a `.drawio` file **without the browser** by calling **`POST /api/convert`** with the same PlantUML or Mermaid C4 text as the request body (see `docs/DETAILS.md` and `public/docs/easy-c4-api-specification.yaml`). The public instance is **[https://c4.wtx.pl](https://c4.wtx.pl)**.
 
 ### Requirements
 
