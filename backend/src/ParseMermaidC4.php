@@ -48,7 +48,7 @@ final class ParseMermaidC4
             'rels' => [],
         ];
 
-        // Stack of boundary contexts. Only Container_Boundary / System_Boundary are emitted as IR boundaries.
+        // Stack of boundary contexts (nested). Boundaries that should appear in IR are emitted on closing '}'.
         $boundaryStack = [];
 
         for ($i = 0; $i < count($lines); $i++) {
@@ -75,16 +75,40 @@ final class ParseMermaidC4
                 $bid = (string)($args[0] ?? '');
                 $bname = (string)($args[1] ?? $bid);
 
-                $isEmitBoundary = ($bKind === 'Container_Boundary' || $bKind === 'System_Boundary');
+                $isEmitBoundary = (
+                    $bKind === 'Container_Boundary'
+                    || $bKind === 'System_Boundary'
+                    || $bKind === 'Enterprise_Boundary'
+                    || $bKind === 'Boundary'
+                );
                 $boundary = null;
                 if ($isEmitBoundary) {
+                    $boundaryKind = 'C1B';
+                    if ($bKind === 'Container_Boundary') {
+                        $boundaryKind = 'C2';
+                    } elseif ($bKind === 'System_Boundary') {
+                        $boundaryKind = 'C3';
+                    }
                     $boundary = [
                         'id' => $bid,
                         'name' => $bname !== '' ? $bname : $bid,
+                        'sourceKind' => $bKind,
                         'componentIds' => [],
                         'items' => [],
-                        'kind' => ($bKind === 'Container_Boundary') ? 'C2' : 'C3',
+                        'memberIds' => [],
+                        'kind' => $boundaryKind,
                     ];
+                }
+
+                if ($isEmitBoundary) {
+                    // Register nested boundary id as a member of the nearest emitting ancestor boundary (if any),
+                    // so outer boxes can wrap inner boundaries too.
+                    for ($pi = count($boundaryStack) - 1; $pi >= 0; $pi--) {
+                        if (!empty($boundaryStack[$pi]['emit']) && isset($boundaryStack[$pi]['boundary']) && is_array($boundaryStack[$pi]['boundary'])) {
+                            $boundaryStack[$pi]['boundary']['memberIds'][] = $bid;
+                            break;
+                        }
+                    }
                 }
 
                 $boundaryStack[] = [
@@ -116,28 +140,74 @@ final class ParseMermaidC4
                         $ir['persons'][] = [
                             'id' => $id,
                             'name' => (string)($args[1] ?? $id),
+                            // Mermaid/C4-PlantUML allows optional description; 2-arg form is common in docs.
                             'description' => (string)($args[2] ?? ''),
                             'external' => $kind === 'Person_Ext',
+                            'boundaryId' => $activeBoundaryId,
                         ];
+                        if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
+                        }
                     }
                     continue;
                 }
 
                 if ($kind === 'System') {
                     $id = (string)($args[0] ?? '');
-                    if ($id !== '') $ir['systems'][] = ['id' => $id, 'name' => (string)($args[1] ?? $id), 'description' => (string)($args[2] ?? '')];
+                    if ($id !== '') {
+                        $ir['systems'][] = [
+                            'id' => $id,
+                            'name' => (string)($args[1] ?? $id),
+                            'description' => (string)($args[2] ?? ''),
+                            'boundaryId' => $activeBoundaryId,
+                        ];
+                        if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
+                        }
+                    }
                     continue;
                 }
 
                 if ($kind === 'System_Ext' || $kind === 'SystemDb_Ext' || $kind === 'SystemQueue_Ext') {
                     $id = (string)($args[0] ?? '');
-                    if ($id !== '') $ir['systemsExt'][] = ['id' => $id, 'name' => (string)($args[1] ?? $id), 'description' => (string)($args[2] ?? '')];
+                    if ($id !== '') {
+                        $ir['systemsExt'][] = [
+                            'id' => $id,
+                            'name' => (string)($args[1] ?? $id),
+                            'description' => (string)($args[2] ?? ''),
+                            'boundaryId' => $activeBoundaryId,
+                        ];
+                        if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
+                        }
+                    }
                     continue;
                 }
 
                 if ($kind === 'SystemDb') {
                     $id = (string)($args[0] ?? '');
-                    if ($id !== '') $ir['databases'][] = ['id' => $id, 'name' => (string)($args[1] ?? $id), 'description' => (string)($args[2] ?? '')];
+                    if ($id !== '') {
+                        $ir['databases'][] = ['id' => $id, 'name' => (string)($args[1] ?? $id), 'description' => (string)($args[2] ?? ''), 'boundaryId' => $activeBoundaryId];
+                        if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
+                        }
+                    }
+                    continue;
+                }
+
+                if ($kind === 'SystemQueue') {
+                    $id = (string)($args[0] ?? '');
+                    if ($id !== '') {
+                        $ir['systems'][] = [
+                            'id' => $id,
+                            'name' => (string)($args[1] ?? $id),
+                            'description' => (string)($args[2] ?? ''),
+                            'boundaryId' => $activeBoundaryId,
+                        ];
+                        if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
+                        }
+                    }
                     continue;
                 }
 
@@ -153,6 +223,7 @@ final class ParseMermaidC4
                         ];
                         if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
                             $boundaryStack[$activeBoundaryIdx]['boundary']['componentIds'][] = $id;
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
                         }
                     }
                     continue;
@@ -178,6 +249,7 @@ final class ParseMermaidC4
                         ];
                         if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
                             $boundaryStack[$activeBoundaryIdx]['boundary']['items'][] = $row;
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
                         } else {
                             $ir['c2Standalone'][] = $row;
                         }
@@ -204,6 +276,7 @@ final class ParseMermaidC4
                         ];
                         if ($activeBoundaryIdx !== null && !empty($boundaryStack[$activeBoundaryIdx]['emit'])) {
                             $boundaryStack[$activeBoundaryIdx]['boundary']['items'][] = $row;
+                            $boundaryStack[$activeBoundaryIdx]['boundary']['memberIds'][] = $id;
                         } else {
                             $ir['c2Standalone'][] = $row;
                         }
@@ -232,7 +305,50 @@ final class ParseMermaidC4
             (strcasecmp($diagram, 'C4Container') === 0 ? 'C2' :
             (strcasecmp($diagram, 'C4Context') === 0 ? 'C1' : 'C1'));
 
+        self::reconcileBoundaryKinds($ir);
+
         return $ir;
+    }
+
+    /**
+     * System_Boundary is emitted with kind C3 by default, but C4-PlantUML/Mermaid
+     * often uses it for container diagrams too. EmitDrawio C2 path only reads
+     * boundaries with kind C2 — reclassify when the boundary holds containers/dbs.
+     *
+     * @param array $ir by reference from parse()
+     */
+    private static function reconcileBoundaryKinds(array &$ir): void
+    {
+        foreach (($ir['boundaries'] ?? []) as $i => $b) {
+            if (!is_array($b)) {
+                continue;
+            }
+            if (($b['kind'] ?? null) !== 'C3') {
+                continue;
+            }
+            $compIds = $b['componentIds'] ?? [];
+            if (is_array($compIds) && count($compIds) > 0) {
+                continue;
+            }
+            $items = $b['items'] ?? [];
+            if (!is_array($items) || count($items) === 0) {
+                continue;
+            }
+            $hasC2Item = false;
+            foreach ($items as $it) {
+                if (!is_array($it)) {
+                    continue;
+                }
+                $k = (string)($it['kind'] ?? '');
+                if ($k === 'container' || $k === 'db' || $k === 'queue') {
+                    $hasC2Item = true;
+                    break;
+                }
+            }
+            if ($hasC2Item) {
+                $ir['boundaries'][$i]['kind'] = 'C2';
+            }
+        }
     }
 
     private static function normalizeQuotesAndBom(string $text): string
@@ -308,8 +424,13 @@ final class ParseMermaidC4
     {
         $from = (string)($args[0] ?? '');
         $to = (string)($args[1] ?? '');
+        // Rel(from, to, label, ?techn, ?descr, ...) — we map optional 4th arg to technology when present.
         $desc = (string)($args[2] ?? '');
-        if ($from === '' || $to === '' || $desc === '') return null;
+        if ($from === '' || $to === '') return null;
+        if ($desc === '') {
+            // 2-arg Rel is unusual but appears in some snippets; treat as empty label.
+            $desc = '';
+        }
         $tech = isset($args[3]) ? (string)$args[3] : null;
         return ['from' => $from, 'to' => $to, 'description' => $desc, 'technology' => $tech];
     }

@@ -87,6 +87,14 @@ if (!is_string($path) || $path === '') {
     $path = '/';
 }
 
+// When deployed in a subdirectory (e.g. /c4/api/convert), normalize to /api/...
+if (!str_starts_with($path, '/api/')) {
+    $pos = strpos($path, '/api/');
+    if ($pos !== false) {
+        $path = substr($path, $pos);
+    }
+}
+
 // Internal rewrite (e.g. Apache: RewriteRule ^api/ index.php) often leaves REQUEST_URI as /index.php;
 // the original path is usually in REDIRECT_URL / REDIRECT_URI.
 if (!str_starts_with($path, '/api/')) {

@@ -44,7 +44,13 @@ final class ValidatePuml
         'UpdateRelStyle',
         'UpdateElementStyle',
         'UpdateLayoutConfig',
+        'AddElementTag',
+        'AddRelTag',
+        'AddProperty',
+        'WithoutPropertyHeader',
         'Deployment_Node',
+        'Deployment_Node_L',
+        'Deployment_Node_R',
         'Node',
         'Node_L',
         'Node_R',
@@ -57,6 +63,8 @@ final class ValidatePuml
         'Lay_R',
         'Lay_Right',
         'title',
+        'LAYOUT_LEFT_RIGHT',
+        'SHOW_LEGEND',
     ];
 
     /** @return array{ok:bool, errors:string[], warnings:string[]} */
@@ -93,7 +101,7 @@ final class ValidatePuml
             $t = trim((string)$line);
             if ($t === '' || str_starts_with($t, "'")) continue;
             // If a macro call starts but doesn't close on the same line, it will likely be ignored by the parser.
-            if (preg_match('/^\w+\s*\(/', $t) && !preg_match('/\)\s*$/', $t)) {
+            if (preg_match('/^\w+\s*\(/', $t) && !preg_match('/\)\s*$/', $t) && !preg_match('/\{\s*$/', $t)) {
                 $warnings[] = 'Macro call should be on a single line (line ' . ($i + 1) . ').';
             }
         }
@@ -142,7 +150,7 @@ final class ValidatePuml
                 foreach (($ir['containers'] ?? []) as $c) if (($c['boundaryId'] ?? null) === $bid) { $hasConts = true; break; }
                 foreach (($ir['containerDbs'] ?? []) as $c) if (($c['boundaryId'] ?? null) === $bid) { $hasConts = true; break; }
                 if ($hasComps && $hasConts) {
-                    $warnings[] = 'System_Boundary "' . ($b['name'] ?? $bid) . '" mixes Component with Container/ContainerDb. Use one type per boundary.';
+                    $warnings[] = 'Boundary "' . ($b['name'] ?? $bid) . '" mixes Component with Container/ContainerDb. Use one type per boundary.';
                 }
             }
         } catch (Throwable $e) {
