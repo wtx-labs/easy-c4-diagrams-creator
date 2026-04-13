@@ -1,10 +1,14 @@
 ## EasyC4 Diagram Creator
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PHP](https://img.shields.io/badge/php-8.0%2B-777BB4.svg?logo=php&logoColor=white)](https://www.php.net/)
+[![Live demo](https://img.shields.io/badge/live%20demo-c4.wtx.pl-brightgreen)](https://c4.wtx.pl)
+
 Convert **PlantUML C4** or **Mermaid C4** text into a **`.drawio`** diagram you can open in **diagrams.net / draw.io**.
 
 **🚀 Application available online - try it now!**
 
-**Just visit <a href="https://c4.wtx.pl" target="_blank" rel="noopener noreferrer">https://c4.wtx.pl</a>**: 
+**Just visit <a href="https://c4.wtx.pl" target="_blank" rel="noopener noreferrer">https://c4.wtx.pl</a>**:
 
 Paste your C4 source, convert, then **download** the `.drawio` file or **open it directly** in diagrams.net - in seconds.
 
@@ -60,6 +64,11 @@ Then open `http://127.0.0.1:8000`.
 - **Technical details (deploy/structure/API)**: see `docs/DETAILS.md`
 - **OpenAPI (endpoints)**: see `public/docs/easy-c4-api-specification.yaml`
 
+### Contributing
+
+Contributions are welcome — bug reports, feature suggestions, and pull requests.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for local setup instructions and guidelines.
+
 ### License
 
-MIT - see `LICENSE`.
+MIT - see [LICENSE](LICENSE).
