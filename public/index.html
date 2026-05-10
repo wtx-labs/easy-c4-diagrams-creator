@@ -181,6 +181,7 @@
       flex: 1 1 12rem;
       min-width: min(100%, 14rem);
       line-height: 1.25;
+      /* Match the slight optical lift of .hero-name-muted (baseline row + top: -0.28em). */
       position: relative;
       top: -0.22em;
     }
@@ -257,8 +258,7 @@
     }
     .footer-cell a:not(.footer-brand-logo) {
       color: rgba(200, 220, 255, 0.7);
-      text-decoration: underline;
-      text-underline-offset: 2px;
+      text-decoration: none;
     }
     .footer-cell a:not(.footer-brand-logo):hover {
       color: rgba(255, 255, 255, 0.92);
@@ -652,12 +652,116 @@
       }
     }
 
+    .ai-prompt-modal-intro {
+      margin: 0 0 0.5rem;
+    }
+    .ai-prompt-modal-usage {
+      margin: 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .ai-prompt-snippet-wrap {
+      position: relative;
+      margin: 0;
+    }
+    .ai-prompt-snippet-wrap .mono-pre {
+      padding-right: 2.4rem;
+    }
+    .ai-prompt-snippet-copy {
+      position: absolute;
+      top: 0.42rem;
+      right: 0.42rem;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+      box-sizing: border-box;
+      border: 1px solid rgba(12, 32, 56, 0.14);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      color: #3a4a62;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.14s ease, color 0.12s ease, background 0.12s ease;
+    }
+    .ai-prompt-snippet-copy:hover {
+      color: #0e3f7a;
+      background: #fff;
+    }
+    /* Tooltip: align to the right edge of the icon so it grows left (modal edge no longer clips it). */
+    .ai-prompt-snippet-copy[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      right: 0;
+      left: auto;
+      bottom: calc(100% + 9px);
+      transform: none;
+      padding: 0.38rem 0.55rem;
+      border-radius: 8px;
+      background: rgba(8, 14, 24, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(245, 247, 252, 0.95);
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.25;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.14s ease;
+      z-index: 30;
+    }
+    .ai-prompt-snippet-copy[data-tooltip]::before {
+      content: "";
+      position: absolute;
+      right: 0.55rem;
+      left: auto;
+      bottom: calc(100% + 4px);
+      transform: none;
+      border: 5px solid transparent;
+      border-top-color: rgba(8, 14, 24, 0.92);
+      opacity: 0;
+      transition: opacity 0.14s ease;
+      z-index: 31;
+    }
+    .ai-prompt-snippet-copy[data-tooltip]:hover::after,
+    .ai-prompt-snippet-copy[data-tooltip]:hover::before {
+      opacity: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ai-prompt-snippet-copy[data-tooltip]::after,
+      .ai-prompt-snippet-copy[data-tooltip]::before {
+        transition: none;
+      }
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .ai-prompt-snippet-wrap:hover .ai-prompt-snippet-copy,
+      .ai-prompt-snippet-wrap:focus-within .ai-prompt-snippet-copy {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    @media (hover: none), (pointer: coarse) {
+      .ai-prompt-snippet-copy {
+        opacity: 0.92;
+        pointer-events: auto;
+      }
+    }
+
     .mono-pre {
       white-space: pre-wrap;
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 0.76rem; /* match textarea#src */
       line-height: 1.45;
-      margin: 0.6rem 0 0;
+      margin: 0;
       padding: 0.65rem 0.7rem;
       background: #f6f8fb;
       border: 1px solid var(--border);
@@ -732,6 +836,11 @@
       padding-left: 1.1rem;
     }
     .modal-list li { margin: 0.25rem 0; }
+    .modal-list .modal-list {
+      margin: 0.35rem 0 0.15rem;
+      padding-left: 1.15rem;
+      font-size: 0.92em;
+    }
     .modal-actions {
       display: flex;
       gap: 0.6rem;
@@ -800,7 +909,7 @@
               data-gramm="false"
               data-gramm_editor="false"
               data-enable-grammarly="false"
-              placeholder='Paste C4 source here, or drag & drop / upload a .puml, .mmd, or .txt file.
+              placeholder='Paste C4 source here, or drag & drop, or upload a .puml, .mmd, or .txt file.
 
 PlantUML: one @startuml … @enduml block. Mermaid: start with C4Context, C4Container, or C4Component.
 
@@ -823,7 +932,7 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
             <div class="side-card">
               <p class="side-title">Upload file</p>
               <div class="file-picker-block">
-                <span class="optional">Load a <code>.puml</code>, <code>.mmd</code>, or <code>.txt</code> file or paste C4 in the editor.</span>
+                <span class="optional">Load a <code>.puml</code>, <code>.mmd</code>, or <code>.txt</code> file into the editor.</span>
                 <div class="file-picker-line" style="margin-top: 0.5rem;">
                   <input
                     type="file"
@@ -880,8 +989,8 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
               <p class="side-title">How to prepare input code for diagrams?</p>
               <div class="side-actions">
                 <button type="button" class="btn-bs-outline btn-side" id="input-tips-open">Tips for PlantUML and Mermaid diagrams</button>
-                <button type="button" class="btn-bs-outline btn-side" data-ai-prompt="puml">AI prompt instructions (PlantUML)</button>
-                <button type="button" class="btn-bs-outline btn-side" data-ai-prompt="mermaid">AI prompt instructions (Mermaid)</button>
+                <button type="button" class="btn-bs-outline btn-side" data-ai-prompt="puml">AI prompt example for PlantUML diagrams</button>
+                <button type="button" class="btn-bs-outline btn-side" data-ai-prompt="mermaid">AI prompt example for Mermaid diagrams</button>
               </div>
             </div>
 
@@ -949,8 +1058,15 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
         <h2 id="ai-prompt-modal-title" class="modal-title">AI prompt instructions</h2>
       </div>
       <div class="modal-body">
-        <p id="ai-prompt-modal-desc"></p>
-        <pre id="ai-prompt-text" class="mono-pre"></pre>
+        <div class="ai-prompt-modal-intro">
+          <p id="ai-prompt-modal-desc" class="ai-prompt-modal-usage"></p>
+        </div>
+        <div class="ai-prompt-snippet-wrap">
+          <pre id="ai-prompt-text" class="mono-pre" aria-label="AI prompt snippet for the model"></pre>
+          <button type="button" class="ai-prompt-snippet-copy" id="ai-prompt-snippet-copy" tabindex="-1" data-tooltip="Copy to clipboard" aria-label="Copy to clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
         <div class="modal-actions">
           <button type="button" class="btn-primary" id="copy-ai-prompt">Copy to clipboard</button>
           <button type="button" class="btn-bs-outline" id="ai-prompt-modal-close">Close</button>
@@ -966,10 +1082,10 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
       </div>
       <div class="modal-body">
         <ul class="modal-list">
-          <li><strong>PlantUML C4:</strong> one <code>@startuml</code> … <code>@enduml</code> block (optional <code>title</code>).</li>
-          <li><strong>Mermaid C4:</strong> first line <code>C4Context</code>, <code>C4Container</code>, or <code>C4Component</code> (optional <code>mermaid</code> Markdown code fence).</li>
-          <li>Use straight ASCII quotes <code>"</code>, simple IDs (letters, numbers, underscore), and one macro per line where possible.</li>
-          <li>Core macros supported in PlantUML (subset): <code>Person</code>, <code>Person_Ext</code>, <code>System</code>, <code>System_Ext</code>, <code>SystemDb</code>, <code>System_Boundary</code>, <code>Container</code>, <code>ContainerDb</code>, <code>Component</code>, <code>Rel</code>. Mermaid accepts a wider C4 set; extra lines may be ignored if not implemented.</li>
+          <li><strong>Choose a format:</strong> PlantUML C4 (<code>@startuml</code> … <code>@enduml</code>) or Mermaid C4 (<code>C4Context</code>, <code>C4Container</code>, or <code>C4Component</code>).</li>
+          <li><strong>Basics:</strong> ASCII double quotes; element ids use letters, digits, and underscores; every <code>Rel</code> must reference ids you already declared.</li>
+          <li><strong>What to paste:</strong> the full diagram text in the editor - do not depend on <code>!include</code> or external files.</li>
+          <li><strong>Details:</strong> use <strong>Examples</strong> for working samples and <strong>AI prompt instructions</strong> for the exact macro lists and rules.</li>
         </ul>
         <div class="modal-actions">
           <button type="button" class="btn-primary" id="input-tips-modal-close">Close</button>
@@ -1107,7 +1223,17 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
     const fileInput = $('file');
     const fileChosen = $('file-chosen');
     const copyAiPromptBtn = $('copy-ai-prompt');
+    const copyAiPromptSnippetBtn = $('ai-prompt-snippet-copy');
     const aiPromptTextEl = $('ai-prompt-text');
+
+    async function copyAiPromptSnippetToClipboard() {
+      if (!aiPromptTextEl) return;
+      try {
+        await navigator.clipboard.writeText(aiPromptTextEl.textContent || '');
+      } catch (err) {
+        showFatalError('Clipboard is not available.', ['Select the snippet and copy manually (Ctrl+C).'], [], 'Copy failed');
+      }
+    }
 
     function sourceLooksReadyForDiagram(raw) {
       const t = String(raw || '').trim();
@@ -1122,8 +1248,9 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
 
     function updateActionButtonsEnabled() {
       const hasText = !!(src && String(src.value || '').trim());
+      const editorFocused = !!(src && document.activeElement === src);
       const pageEl = document.querySelector('.page');
-      if (pageEl) pageEl.classList.toggle('page--editor-wide', hasText);
+      if (pageEl) pageEl.classList.toggle('page--editor-wide', hasText || editorFocused);
       if (submitBtn) submitBtn.disabled = !hasText;
       if (openDiagramsBtn) {
         openDiagramsBtn.disabled = !hasText;
@@ -1209,10 +1336,13 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
 
     async function validateInputOrThrow() {
       const puml = (src && String(src.value || '')) || '';
-      const url = '/api/validate';
+      const url = 'api/validate';
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-EasyC4-Client': 'gui',
+        },
         body: puml,
       });
       const txt = await safeReadText(res);
@@ -1249,32 +1379,12 @@ Rel(sys, mail, "Sends e-mail via", "SMTP")
 
     const AI_PROMPT_SNIPPETS = {
       puml: {
-        title: 'AI prompt instructions (PlantUML)',
-        desc: 'Paste after your own task so the model knows the result must work in a strict C4→diagram converter (e.g. this site).',
-        body: `The user will paste your answer into their own application: a tool that converts only a strict subset of C4-PlantUML into a diagram. Use the architecture or domain from the rest of this conversation, but the PlantUML must follow the rules below so that application accepts it.
-
-Output only one @startuml … @enduml block (optional \`title\` line after @startuml). No markdown fences, no commentary.
-
-Macros only: Person, Person_Ext, System, System_Ext, SystemDb, System_Boundary { … }, Container, ContainerDb, Component, Rel.
-
-Level: C1 = Person/System/System_Ext/SystemDb + Rel, no System_Boundary. C2 = System_Boundary containing only Container/ContainerDb. C3 = System_Boundary containing only Component. Never mix Container-type and Component lines inside one boundary.
-
-One full macro per line. Person/System types: (id, "Name", "Description"). Container/ContainerDb/Component: (id, "Name", "Technology", "Description"). Rel(a,b,"label") or Rel(a,b,"label","technology"); a and b must be defined ids.
-
-Ids = letters, digits, underscore; straight ASCII ". No !include, skinparam, BiRel, Lay_*, Update*, Deployment_*, or other @start diagram types.`,
+        desc: 'Below is a sample prompt that generates diagrams in the C4 model approach as a text-based diagram description in PlantUML for your application.',
+        body: 'Generate diagram in C4 Model convention in PlantUML C4 format (https://github.com/plantuml-stdlib/C4-PlantUML) for my application as 3 separate files: my-application-system-context-diagram.puml, my-application-container-diagram.puml and for one of the container my-application-component-diagram.puml',
       },
       mermaid: {
-        title: 'AI prompt instructions (Mermaid C4)',
-        desc: 'Paste after your own task so the model knows the result must work in a strict Mermaid C4→diagram converter (e.g. this site).',
-        body: `The user will paste your answer into their own application: a tool that converts only a strict subset of Mermaid C4 into a diagram. Use the architecture or domain from the rest of this conversation, but the Mermaid must follow the rules below so that application accepts it.
-
-Output diagram source only (prefer no \`\`\` fence; that application strips leading fence lines if present).
-
-First non-empty line exactly: C4Context, C4Container, or C4Component. Optional: \`title …\`
-
-Prefer: Person, Person_Ext, System, System_Ext, SystemDb, SystemDb_Ext, Container, Container_Ext, ContainerQueue, ContainerDb, ContainerDb_Ext, Component, Component_Ext, ComponentDb, System_Boundary/Container_Boundary { … }, Rel, BiRel. One statement per line; straight ASCII double quotes in strings. Rel(a,b,"label") or Rel(a,b,"label","technology"); ids: letters, digits, underscore.
-
-Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use the PlantUML prompt for @startuml/@enduml.)`,
+        desc: 'Below is a sample prompt that generates diagrams in the C4 model approach as a text-based diagram description in Mermaid C4 for your application.',
+        body: 'Generate diagram in C4 Model convention in Mermaid C4 format (https://mermaid.ai/open-source/syntax/c4.html) for my partnershop-ui as 3 separate files: my-application-system-context-diagram.mmd, my-application-container-diagram.mmd and for one of the container my-application-component-diagram.mmd',
       },
     };
 
@@ -1300,13 +1410,20 @@ Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use th
       }
     }
 
-    function openAiPromptModal(kind) {
+    function openAiPromptModal(kind, triggerButton) {
       if (!aiPromptModal) return;
-      const pack = kind && AI_PROMPT_SNIPPETS[kind] ? AI_PROMPT_SNIPPETS[kind] : AI_PROMPT_SNIPPETS.puml;
+      const resolvedKind = AI_PROMPT_SNIPPETS[kind] ? kind : 'puml';
+      const pack = AI_PROMPT_SNIPPETS[resolvedKind];
       const titleEl = $('ai-prompt-modal-title');
       const descEl = $('ai-prompt-modal-desc');
       const preEl = $('ai-prompt-text');
-      if (titleEl) titleEl.textContent = pack.title;
+      const anchor =
+        triggerButton instanceof HTMLElement
+          ? triggerButton
+          : document.querySelector('[data-ai-prompt="' + resolvedKind + '"]');
+      const label =
+        anchor && typeof anchor.textContent === 'string' ? anchor.textContent.trim() : 'AI prompt';
+      if (titleEl) titleEl.textContent = label;
       if (descEl) descEl.textContent = pack.desc;
       if (preEl) preEl.textContent = pack.body.trim() + '\n';
       aiPromptModal.hidden = false;
@@ -1346,7 +1463,7 @@ Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use th
     document.querySelectorAll('[data-ai-prompt]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const k = btn.getAttribute('data-ai-prompt');
-        openAiPromptModal(k === 'mermaid' ? 'mermaid' : 'puml');
+        openAiPromptModal(k === 'mermaid' ? 'mermaid' : 'puml', btn);
       });
     });
     $('ai-prompt-modal-close')?.addEventListener('click', closeAiPromptModal);
@@ -1433,6 +1550,8 @@ Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use th
         updateActionButtonsEnabled();
       });
       src.addEventListener('change', updateActionButtonsEnabled);
+      src.addEventListener('focus', updateActionButtonsEnabled);
+      src.addEventListener('blur', updateActionButtonsEnabled);
     }
     updateActionButtonsEnabled();
 
@@ -1462,12 +1581,12 @@ Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use th
     });
 
     if (copyAiPromptBtn && aiPromptTextEl) {
-      copyAiPromptBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(aiPromptTextEl.textContent || '');
-        } catch (err) {
-        showFatalError('Clipboard is not available.', ['Select the snippet and copy manually (Ctrl+C).'], [], 'Copy failed');
-        }
+      copyAiPromptBtn.addEventListener('click', () => copyAiPromptSnippetToClipboard());
+    }
+    if (copyAiPromptSnippetBtn && aiPromptTextEl) {
+      copyAiPromptSnippetBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        copyAiPromptSnippetToClipboard();
       });
     }
 
@@ -1527,10 +1646,13 @@ Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use th
       submitBtn.disabled = true;
       try {
         await validateInputOrThrow();
-        const url = '/api/convert';
+        const url = 'api/convert';
         const res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-EasyC4-Client': 'gui',
+          },
           body: src.value,
         });
         if (!res.ok) {
@@ -1570,10 +1692,13 @@ Update*/Lay_*/Deployment_Node-style lines are ignored by that converter. (Use th
           return;
         }
         await validateInputOrThrow();
-        const url = '/api/convert';
+        const url = 'api/convert';
         const res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-EasyC4-Client': 'gui',
+          },
           body: puml,
         });
         if (!res.ok) {

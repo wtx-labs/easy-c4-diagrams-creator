@@ -32,7 +32,7 @@
 
   async function ensurePakoAvailable() {
     if (global.pako && global.pako.deflateRaw) return;
-    await loadScriptOnce('assets/vendor/pako.min.js');
+    await loadScriptOnce('assets/js/pako.min.js');
     if (!global.pako || !global.pako.deflateRaw) {
       throw new Error('Compression is not available (pako did not load). Please refresh the page.');
     }

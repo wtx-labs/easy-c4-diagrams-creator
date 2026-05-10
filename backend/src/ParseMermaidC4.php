@@ -311,9 +311,9 @@ final class ParseMermaidC4
     }
 
     /**
-     * System_Boundary is emitted with kind C3 by default, but C4-PlantUML/Mermaid
-     * often uses it for container diagrams too. EmitDrawio C2 path only reads
-     * boundaries with kind C2 — reclassify when the boundary holds containers/dbs.
+     * Mermaid C4 often mixes boundary macros (System_Boundary/Boundary/Container_Boundary)
+     * in container diagrams. EmitDrawio C2 path reads only boundaries with kind=C2,
+     * so any boundary that actually contains C2 items must be reclassified to C2.
      *
      * @param array $ir by reference from parse()
      */
@@ -321,9 +321,6 @@ final class ParseMermaidC4
     {
         foreach (($ir['boundaries'] ?? []) as $i => $b) {
             if (!is_array($b)) {
-                continue;
-            }
-            if (($b['kind'] ?? null) !== 'C3') {
                 continue;
             }
             $compIds = $b['componentIds'] ?? [];
